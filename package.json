@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/justmic007/ecommerce-api/issues"
   },
-  "homepage": "https://github.com/justmic007/ecommerce-api#readme"
+  "homepage": "https://github.com/justmic007/ecommerce-api#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
