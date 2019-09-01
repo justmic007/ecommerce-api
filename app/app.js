@@ -1,11 +1,14 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const logger = require('morgan');
 
 const app = express();
 
-app.use((req, res, next) => {
-    res.status(200).json({
-        message: 'It works'
-    })
-})
+const productRoutes = require('./routes/products');
+const oderRoutes = require('./routes/orders');
+
+app.use('/products', productRoutes);
+app.use('/orders', oderRoutes);
 
 module.exports = app;
