@@ -3,8 +3,8 @@
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "javascript": true,
-        "node": true
+        // "javascript": true,
+       "node": true
     },
     "extends": "eslint:recommended",
     "globals": {
