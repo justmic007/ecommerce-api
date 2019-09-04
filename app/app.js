@@ -1,5 +1,8 @@
+// import express from 'express';
+// import bodyParser from 'body-parser';
+// import logger from 'morgan';
 const express = require('express');
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 // const mongoose = require('mongoose');
 const logger = require('morgan');
 
@@ -8,9 +11,14 @@ const app = express();
 const productRoutes = require('./routes/products');
 const oderRoutes = require('./routes/orders');
 
+// Logger to console
 app.use(logger('dev'));
 
-//Routes that handles requests
+// Extracting bodies of in-coming requests
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+// Routes that handles requests
 app.use('/products', productRoutes);
 app.use('/orders', oderRoutes);
 

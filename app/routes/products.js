@@ -2,8 +2,21 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', (req, res, next) => {
+    // Create a product
+    const product = {
+        productName: req.body.productName,
+        price: req.body.price,
+        serialNumber: req.body.serialNumber,
+        productSKU: req.body.productSKU,
+        brand: req.body.brand,
+        model: req.body.model,
+        category: req.body.category,
+        manufacturer: req.body.manufacturer,
+        description: req.body.description
+    };
     res.status(201).json({
-        message: 'Handling POST requests to /products'
+        message: 'Handling POST requests to /products',
+        createdProduct: product
     });
 });
 
