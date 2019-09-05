@@ -1,6 +1,3 @@
-// import express from 'express';
-// import bodyParser from 'body-parser';
-// import logger from 'morgan';
 const express = require('express');
 const bodyParser = require('body-parser');
 // const mongoose = require('mongoose');
