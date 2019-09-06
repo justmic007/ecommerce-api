@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const uuid = require('uuid');
+
+const Product = require('../models/products');
+// const { MetaSchema } = require('../schema');
 
 router.post('/', (req, res, next) => {
     // Create a product
-    const product = {
+    const product = new Product({
+        uuid: new uuid.v4,
         productName: req.body.productName,
         price: req.body.price,
         serialNumber: req.body.serialNumber,
@@ -12,8 +17,15 @@ router.post('/', (req, res, next) => {
         model: req.body.model,
         category: req.body.category,
         manufacturer: req.body.manufacturer,
-        description: req.body.description
-    };
+        description: req.body.description,
+        meta: req.body.MetaSchema
+    });
+    // console.log('META-Info', product.meta)
+    product.save()
+    .then(result => {
+        // console.log(result);
+    })
+    .catch(err => console.log(err));
     res.status(201).json({
         message: 'Handling POST requests to /products',
         createdProduct: product
@@ -51,7 +63,5 @@ router.delete('/:productId', (req, res, next) => {
         message: 'Deleted product!'
     })
 })
-
-
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const logger = require('morgan');
 
 const app = express();
@@ -8,11 +8,18 @@ const app = express();
 const productRoutes = require('./routes/products');
 const oderRoutes = require('./routes/orders');
 
+mongoose.connect(
+    'mongodb://localhost:27017/ecommerceapp-products',
+    {
+        useNewUrlParser: true
+    }
+);
+
 // Logger to console
 app.use(logger('dev'));
 
 // Extracting bodies of in-coming requests
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Handle CORS(i.e security mechanism used by the browser) errors
