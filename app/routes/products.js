@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const uuid = require('uuid');
+// const uuid = require('uuid');
 
 const Product = require('../models/products');
 // const { MetaSchema } = require('../schema');
@@ -8,7 +8,6 @@ const Product = require('../models/products');
 router.post('/', (req, res, next) => {
     // Create a product
     const product = new Product({
-        uuid: new uuid.v4,
         productName: req.body.productName,
         price: req.body.price,
         serialNumber: req.body.serialNumber,
@@ -18,12 +17,11 @@ router.post('/', (req, res, next) => {
         category: req.body.category,
         manufacturer: req.body.manufacturer,
         description: req.body.description,
-        meta: req.body.MetaSchema
+        meta: { ...req.body.meta, created: new Date() }
     });
-    // console.log('META-Info', product.meta)
     product.save()
     .then(result => {
-        // console.log(result);
+        console.log(result);
     })
     .catch(err => console.log(err));
     res.status(201).json({
