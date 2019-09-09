@@ -38,10 +38,9 @@ router.get('/', (req, res, next) => {
 
 // const findById = async ({ payload }) => Owner.findOne({ uuid: payload.uuid, 'meta.active': { $gte: true } });
 
-router.get(`/:productId`, (req, res, next) => {
-    const uuid = req.body.productId;
-    console.log('REQuestttt', req.body.productId);
-    Product.findById(uuid)
+router.get(`/:productUUID`, (req, res, next) => {
+    const uuid = req.params.productUUID;
+    Product.findOne({ uuid, 'meta.active': { $gte: true } })
     .exec()
     .then(doc => {
         console.log(doc);
