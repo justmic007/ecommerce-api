@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 
 // Routes that handles requests
 app.use('/products', productRoutes);
+app.use('/products/:{uuid}', productRoutes);
 app.use('/orders', oderRoutes);
 
 // Handle errors that passes the routes above

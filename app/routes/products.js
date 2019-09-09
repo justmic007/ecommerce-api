@@ -20,8 +20,8 @@ router.post('/', (req, res, next) => {
         meta: { ...req.body.meta, created: new Date() }
     });
     product.save()
-    .then(result => {
-        console.log(result);
+    .then(payload => {
+        console.log(payload);
     })
     .catch(err => console.log(err));
     res.status(201).json({
@@ -36,18 +36,21 @@ router.get('/', (req, res, next) => {
     });
 });
 
-router.get('/:productId', (req, res, next) => {
-    const id = req.params.productId;
-    if (id === 'special') {
-        res.status(200).json({
-            message: 'You discovered the special ID',
-            id: id
-        })
-    } else {
-        res.status(200).json({
-            message: 'You passed an ID',
-        })
-    }
+// const findById = async ({ payload }) => Owner.findOne({ uuid: payload.uuid, 'meta.active': { $gte: true } });
+
+router.get(`/:productId`, (req, res, next) => {
+    const uuid = req.body.productId;
+    console.log('REQuestttt', req.body.productId);
+    Product.findById(uuid)
+    .exec()
+    .then(doc => {
+        console.log(doc);
+        res.status(200).json(doc);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err});
+    });
 });
 
 router.put('/:productId', (req, res, next) => {
@@ -60,6 +63,6 @@ router.delete('/:productId', (req, res, next) => {
     res.status(200).json({
         message: 'Deleted product!'
     })
-})
+});
 
 module.exports = router;
