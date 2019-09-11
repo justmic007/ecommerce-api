@@ -6,7 +6,7 @@ const logger = require('morgan');
 const app = express();
 
 const productRoutes = require('./routes/products');
-const oderRoutes = require('./routes/orders');
+const orderRoutes = require('./routes/orders');
 
 mongoose.connect(
     'mongodb://localhost:27017/ecommerceapp-products',
@@ -38,8 +38,8 @@ app.use((req, res, next) => {
 
 // Routes that handles requests
 app.use('/products', productRoutes);
-app.use('/products/:{uuid}', productRoutes);
-app.use('/orders', oderRoutes);
+// app.use('/products/:{uuid}', productRoutes);
+app.use('/orders', orderRoutes);
 
 // Handle errors that passes the routes above
 app.use((req, res, next) => {

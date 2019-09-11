@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
-// const uuid = require('uuid');
 
 const Product = require('../models/products');
-// const { MetaSchema } = require('../schema');
 
-router.post('/', (req, res, next) => {
+router.post('/', (req, res) => {
     // Create a product
     const product = new Product({
         productName: req.body.productName,
@@ -19,32 +17,57 @@ router.post('/', (req, res, next) => {
         description: req.body.description,
         meta: { ...req.body.meta, created: new Date() }
     });
-    product.save()
+    product
+        .save()
+        .then(payload => {
+            console.log(payload);
+            res.status(201).json({
+                message: 'Handling POST requests to /products',
+                createdProduct: payload
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.get('/', (req, res) => {
+    Product.find({'meta.active': { $gte: true }})
+    .exec()
     .then(payload => {
-        console.log(payload);
+        console.log(payload)
+        if (payload) {
+            res.status(200).json({
+                payload
+        })
+        } else {
+            res.status(404).json({
+                message: 'Not found'
+            })
+        }
     })
-    .catch(err => console.log(err));
-    res.status(201).json({
-        message: 'Handling POST requests to /products',
-        createdProduct: product
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        });
     });
 });
 
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /products'
-    });
-});
-
-// const findById = async ({ payload }) => Owner.findOne({ uuid: payload.uuid, 'meta.active': { $gte: true } });
-
-router.get(`/:productUUID`, (req, res, next) => {
+router.get(`/:productUUID`, (req, res) => {
     const uuid = req.params.productUUID;
     Product.findOne({ uuid, 'meta.active': { $gte: true } })
     .exec()
-    .then(doc => {
-        console.log(doc);
-        res.status(200).json(doc);
+    .then(payload => {
+        console.log(payload);
+        if (payload) {
+            res.status(200).json(payload);
+        } else {
+            res.status(404).json({ message: 'Not found'});
+        }
     })
     .catch(err => {
         console.log(err);
@@ -52,16 +75,46 @@ router.get(`/:productUUID`, (req, res, next) => {
     });
 });
 
-router.put('/:productId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated product!'
+router.put('/:productUUID', (req, res) => {
+    const uuid = req.params.productUUID;
+    const updateOps = {};
+    for (const ops of req.body){
+        updateOps[ops.propName] = ops.value;
+    }
+    Product.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now()})
+        .exec()
+    .then(payload => {
+        res.status(200).json({
+            payload
+        })
+    })
+    .catch(err => {
+        res.status({
+            error: err
+        })
     })
 });
 
-router.delete('/:productId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted product!'
+router.delete('/:productUUID', (req, res) => {
+    const uuid = req.params.productUUID;
+    Product.updateOne(
+        { uuid },
+        {
+            $set: { 'meta.active': false, 'meta.updated': new Date() }
+        }
+    )
+    .exec()
+    .then(payload => {
+        res.status(200).json({
+            payload
+        })
     })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        })
+    });
 });
 
 module.exports = router;
