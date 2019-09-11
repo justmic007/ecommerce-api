@@ -40,7 +40,23 @@ router.get('/', (req, res) => {
     .then(payload => {
         const response = {
             count: payload.length,
-            products: payload
+            products: payload.map(payload => {
+                return {
+                    productName: payload.productName,
+                    price: payload.price,
+                    serialNumber: payload.serialNumber,
+                    productSKU: payload.productSKU,
+                    brand: payload.brand,
+                    model: payload.model,
+                    category: payload.category,
+                    manufacturer: payload.manufacturer,
+                    description: payload.description,
+                    uuid: payload.uuid,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/products/' + payload.uuid
+                    }
+                }}),
         };
         console.log(payload)
         // if (payload) {
