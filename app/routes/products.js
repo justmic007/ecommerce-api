@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-router.post('/', (req, res, next) => {
+const Product = require('../models/products');
+
+router.post('/', (req, res) => {
     // Create a product
-    const product = {
+    const product = new Product({
         productName: req.body.productName,
         price: req.body.price,
         serialNumber: req.body.serialNumber,
@@ -12,46 +14,107 @@ router.post('/', (req, res, next) => {
         model: req.body.model,
         category: req.body.category,
         manufacturer: req.body.manufacturer,
-        description: req.body.description
-    };
-    res.status(201).json({
-        message: 'Handling POST requests to /products',
-        createdProduct: product
+        description: req.body.description,
+        meta: { ...req.body.meta, created: new Date() }
+    });
+    product
+        .save()
+        .then(payload => {
+            console.log(payload);
+            res.status(201).json({
+                message: 'Handling POST requests to /products',
+                createdProduct: payload
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.get('/', (req, res) => {
+    Product.find({'meta.active': { $gte: true }})
+    .exec()
+    .then(payload => {
+        console.log(payload)
+        if (payload) {
+            res.status(200).json({
+                payload
+        })
+        } else {
+            res.status(404).json({
+                message: 'Not found'
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        });
     });
 });
 
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /products'
+router.get(`/:productUUID`, (req, res) => {
+    const uuid = req.params.productUUID;
+    Product.findOne({ uuid, 'meta.active': { $gte: true } })
+    .exec()
+    .then(payload => {
+        console.log(payload);
+        if (payload) {
+            res.status(200).json(payload);
+        } else {
+            res.status(404).json({ message: 'Not found'});
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err});
     });
 });
 
-router.get('/:productId', (req, res, next) => {
-    const id = req.params.productId;
-    if (id === 'special') {
-        res.status(200).json({
-            message: 'You discovered the special ID',
-            id: id
-        })
-    } else {
-        res.status(200).json({
-            message: 'You passed an ID',
-        })
+router.put('/:productUUID', (req, res) => {
+    const uuid = req.params.productUUID;
+    const updateOps = {};
+    for (const ops of req.body){
+        updateOps[ops.propName] = ops.value;
     }
-});
-
-router.put('/:productId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated product!'
+    Product.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now()})
+        .exec()
+    .then(payload => {
+        res.status(200).json({
+            payload
+        })
+    })
+    .catch(err => {
+        res.status({
+            error: err
+        })
     })
 });
 
-router.delete('/:productId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted product!'
+router.delete('/:productUUID', (req, res) => {
+    const uuid = req.params.productUUID;
+    Product.updateOne(
+        { uuid },
+        {
+            $set: { 'meta.active': false, 'meta.updated': new Date() }
+        }
+    )
+    .exec()
+    .then(payload => {
+        res.status(200).json({
+            payload
+        })
     })
-})
-
-
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        })
+    });
+});
 
 module.exports = router;
