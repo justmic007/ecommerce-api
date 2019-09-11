@@ -35,19 +35,23 @@ router.post('/', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-    Product.find({'meta.active': { $gte: true }})
+    Product.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
     .then(payload => {
+        const response = {
+            count: payload.length,
+            products: payload
+        };
         console.log(payload)
-        if (payload) {
+        // if (payload) {
             res.status(200).json({
-                payload
+                response
         })
-        } else {
-            res.status(404).json({
-                message: 'Not found'
-            })
-        }
+        // } else {
+        //     res.status(404).json({
+        //         message: 'Not found'
+        //     })
+        // }
     })
     .catch(err => {
         console.log(err);
@@ -59,7 +63,7 @@ router.get('/', (req, res) => {
 
 router.get(`/:productUUID`, (req, res) => {
     const uuid = req.params.productUUID;
-    Product.findOne({ uuid, 'meta.active': { $gte: true } })
+    Product.findOne({ uuid, 'meta.active': { $gte: true } }, {__v: 0, _id: 0})
     .exec()
     .then(payload => {
         console.log(payload);
