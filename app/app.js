@@ -8,6 +8,8 @@ const app = express();
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 
+mongoose.set( 'useCreateIndex', true );
+
 mongoose.connect(
     'mongodb://localhost:27017/ecommerceapp-products',
     {

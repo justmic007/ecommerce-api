@@ -127,6 +127,7 @@ router.put('/:productUUID', (req, res) => {
         .then(payload => {
             res.status(200).json({
                 product: payload,
+                message: 'Product updated',
                 request: {
                     type: 'PUT',
                     description: 'Updates a Single product',
@@ -152,6 +153,7 @@ router.delete('/:productUUID', (req, res) => {
     .then(payload => {
             res.status(200).json({
                 product: payload,
+                message: 'Product deleted',
                 request: {
                     type: 'DELETE',
                     description: 'Soft-deletes a single product by its uuid',
