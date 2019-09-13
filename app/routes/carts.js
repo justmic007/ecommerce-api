@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
-                        url: 'http://localhost:3000/products/' + payload.uuid
+                        url: 'http://localhost:3000/carts/' + payload.uuid
                     }
                 }
             });
@@ -48,7 +48,7 @@ router.get('/', (req, res) => {
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
-                        url: 'http://localhost:3000/products/' + payload.uuid
+                        url: 'http://localhost:3000/carts/' + payload.uuid
                     }
                 }}),
         };
@@ -83,7 +83,7 @@ router.get(`/:productUUID`, (req, res) => {
                 request: {
                     type: 'GET',
                     description: 'Get a Single product(item) from Cart',
-                    url: 'http://localhost:3000/products/' + payload.uuid
+                    url: 'http://localhost:3000/carts/' + payload.uuid
             }});
         } else {
             res.status(404).json({ message: 'Not found'});
@@ -106,11 +106,11 @@ router.put('/:productUUID', (req, res) => {
         .then(payload => {
             res.status(200).json({
                 cart: payload,
-                message: 'Product updated',
+                message: 'Product in cart updated',
                 request: {
                     type: 'PUT',
                     description: 'Updates a Single product in cart',
-                    url: 'http://localhost:3000/products/' + uuid
+                    url: 'http://localhost:3000/carts/' + uuid
         }})
     })
     .catch(err => {
