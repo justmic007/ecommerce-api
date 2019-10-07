@@ -8,5 +8,11 @@ const MetaSchema = new Schema({
 }, { _id: false });
 
 module.exports = {
-  MetaSchema
-};
+  MetaSchema,
+  PRODUCT: 'Product'
+}
+
+// exports["defaults"] = {
+//   MetaSchema,
+//   PRODUCT: 'Product'
+// }

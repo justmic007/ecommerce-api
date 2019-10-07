@@ -7,6 +7,8 @@ const app = express();
 
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
+const cartRoutes = require('./routes/carts');
+
 
 mongoose.set( 'useCreateIndex', true );
 
@@ -42,6 +44,8 @@ app.use((req, res, next) => {
 app.use('/products', productRoutes);
 // app.use('/products/:{uuid}', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/carts', cartRoutes);
+
 
 // Handle errors that passes the routes above
 app.use((req, res, next) => {
