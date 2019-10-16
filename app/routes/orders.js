@@ -3,22 +3,11 @@ const router = express.Router();
 
 const Order = require('../models/orders');
 
-router.post('/', (req, res, next) => {
+router.post('/', (req, res) => {
     // Create an order
     const order = new Order({
-        // productList: req.body.productList,
-        // totalAmount: req.body.totalAmount,
-        // paymentMethod: req.body.paymentMethod,
-        // deliveryMethod: req.body.deliveryMethod,
-        // orderNumber: req.body.orderNumber,
-        // billingAddress: req.body.billingAddress,
-        // orderStatus: req.body.orderStatus,
-        // totalNumberOfItems: req.body.totalNumberOfItems,
-        // shippingAddress: req.body.shippingAddress,
-        // receiverName: req.body.receiverName,
-        // receiverPhoneNumber: req.body.receiverPhoneNumber,
-        // phoneNumber: req.body.phoneNumber
-        ...req.body
+        ...req.body,
+        meta: { ...req.body.meta, created: new Date() },
     });
     order
         .save()
@@ -28,19 +17,6 @@ router.post('/', (req, res, next) => {
                 message: 'Successfully ordered item(s)',
                 createdOrder: {
                     ...payload,
-                    // uuid: payload.uuid,
-                    // productList: payload.productList,
-                    // totalAmount: payload.totalAmount,
-                    // paymentMethod: payload.paymentMethod,
-                    // deliveryMethod: payload.deliveryMethod,
-                    // orderNumber: payload.orderNumber,
-                    // billingAddress: payload.billingAddress,
-                    // orderStatus: payload.orderStatus,
-                    // totalNumberOfItems: payload.totalNumberOfItems,
-                    // shippingAddress: payload.shippingAddress,
-                    // receiverName: payload.receiverName,
-                    // receiverPhoneNumber: payload.receiverPhoneNumber,
-                    // phoneNumber: payload.phoneNumber,
                     request: {
                         type: 'GET',
                         url: 'http://localhost:3000/orders/' + payload.uuid
@@ -64,20 +40,7 @@ router.get('/', (req, res) => {
             count: payload.length,
             orders: payload.map(payload => {
                 return {
-                    // ...payload,
-                    // uuid: payload.uuid,
-                    productList: req.body.productList,
-                    totalAmount: req.body.totalAmount,
-                    paymentMethod: req.body.paymentMethod,
-                    deliveryMethod: req.body.deliveryMethod,
-                    orderNumber: req.body.orderNumber,
-                    billingAddress: req.body.billingAddress,
-                    orderStatus: req.body.orderStatus,
-                    totalNumberOfItems: req.body.totalNumberOfItems,
-                    shippingAddress: req.body.shippingAddress,
-                    receiverName: req.body.receiverName,
-                    receiverPhoneNumber: req.body.receiverPhoneNumber,
-                    phoneNumber: req.body.phoneNumber,
+                    ...req.body,
                     request: {
                         type: 'GET',
                         url: 'http://localhost:3000/orders/' + payload.uuid
