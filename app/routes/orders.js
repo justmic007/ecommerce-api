@@ -90,6 +90,31 @@ router.get('/:orderUUID', (req, res) => {
     })
 });
 
+router.put('/:orderUUID', (req, res) => {
+    const uuid = req.params.orderUUID;
+    const updateOps = {};
+    for (const ops of req.body){
+        updateOps[ops.propName] = ops.value;
+    }
+    Order.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now()})
+        .exec()
+        .then(payload => {
+            res.status(200).json({
+                product: payload,
+                message: 'Order updated',
+                request: {
+                    type: 'PUT',
+                    description: 'Updates a Single order',
+                    url: 'http://localhost:3000/orders/' + uuid
+        }})
+    })
+    .catch(err => {
+        res.status({
+            error: err
+        })
+    })
+});
+
 router.delete('/:orderId', (req, res, next) => {
     res.status(200).json({
         message: 'Order deleted',
