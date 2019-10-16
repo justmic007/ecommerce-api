@@ -115,10 +115,30 @@ router.put('/:orderUUID', (req, res) => {
     })
 });
 
-router.delete('/:orderId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
+router.delete('/:orderUUID', (req, res) => {
+    const uuid = req.params.orderUUID;
+    Order.updateOne(
+        { uuid },
+        {
+            $set: { 'meta.active': false, 'meta.updated': new Date() }
+        }
+    )
+    .exec()
+    .then(payload => {
+            res.status(200).json({
+                product: payload,
+                message: 'Order deleted',
+                request: {
+                    type: 'DELETE',
+                    description: 'Soft-deletes a single order by its uuid',
+                    url: 'http://localhost:3000/orders/'
+        }})
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        })
     });
 });
 
