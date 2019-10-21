@@ -22,6 +22,9 @@ mongoose.connect(
 // Logger to console
 app.use(logger('dev'));
 
+// Makes uploads folder publicly available
+app.use('/uploads', express.static('uploads'));
+
 // Extracting bodies of in-coming requests
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
