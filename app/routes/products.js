@@ -24,7 +24,7 @@ const upload = multer({
     // dest: 'uploads/'
     storage: storage,
     limits: {
-        fileSize: 1024 * 1024 * 5
+        fileSize: 1024 * 1024 * 20
     },
     fileFilter: fileFilter
 });
@@ -32,12 +32,15 @@ const upload = multer({
 
 const Product = require('../models/products');
 
-router.post('/', upload.single('productImage'), (req, res) => {
-    // console.log('@@FILE', req.file)
+router.post('/', upload.array('productImage', 5), (req, res) => {
+    console.log('@@FILE', ...req.files.map(path => {
+        path
+    }));
+    // console.log('@@FILE', req.body);
     // Create a product
     const product = new Product({
         productName: req.body.productName,
-        productImage: req.file.path,
+        productImage: req.files.map(({ path }) => path),
         price: req.body.price,
         serialNumber: req.body.serialNumber,
         productSKU: req.body.productSKU,
@@ -56,7 +59,7 @@ router.post('/', upload.single('productImage'), (req, res) => {
                 message: 'Created product successfully',
                 createdProduct: {
                     productName: payload.productName,
-                    productImage: req.file.path,
+                    productImage: payload.productImage,
                     price: payload.price,
                     serialNumber: payload.serialNumber,
                     productSKU: payload.productSKU,

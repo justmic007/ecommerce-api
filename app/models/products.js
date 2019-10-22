@@ -12,7 +12,7 @@ paginate.paginate.options = {
 const productSchema = new Schema({
     uuid: { type: String, default: uuid.v4 },
     productName: { type: String, required: true },
-    productImage: { type: String, required: true },
+    productImage: { type: [String], required: true },
     price: { type: Number, required: true },
     serialNumber: { type: String, required: true },
     productSKU: { type: String, required: true },
