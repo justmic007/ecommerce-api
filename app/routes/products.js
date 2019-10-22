@@ -1,12 +1,46 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, new Date().toISOString() + file.originalname);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    // accept or reject a file
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg'){
+        cb(null, true);
+    } else {
+        cb(new Error('Check your file type. Only PNG/JPEG file format is accepted'), false);
+    }
+};
+
+const upload = multer({
+    // dest: 'uploads/'
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 20
+    },
+    fileFilter: fileFilter
+});
+
 
 const Product = require('../models/products');
 
-router.post('/', (req, res) => {
+router.post('/', upload.array('productImage', 5), (req, res) => {
+    console.log('@@FILE', ...req.files.map(path => {
+        path
+    }));
+    // console.log('@@FILE', req.body);
     // Create a product
     const product = new Product({
         productName: req.body.productName,
+        productImage: req.files.map(({ path }) => path),
         price: req.body.price,
         serialNumber: req.body.serialNumber,
         productSKU: req.body.productSKU,
@@ -20,11 +54,12 @@ router.post('/', (req, res) => {
     product
         .save()
         .then(payload => {
-            console.log(payload);
+            console.log({payload});
             res.status(201).json({
                 message: 'Created product successfully',
                 createdProduct: {
                     productName: payload.productName,
+                    productImage: payload.productImage,
                     price: payload.price,
                     serialNumber: payload.serialNumber,
                     productSKU: payload.productSKU,
@@ -58,6 +93,7 @@ router.get('/', (req, res) => {
             products: payload.map(payload => {
                 return {
                     productName: payload.productName,
+                    productImage: payload.productImage,
                     price: payload.price,
                     serialNumber: payload.serialNumber,
                     productSKU: payload.productSKU,
