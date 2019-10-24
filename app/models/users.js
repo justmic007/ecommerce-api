@@ -32,7 +32,7 @@ const AddressSchema = new Schema({
 
 const userSchema = new Schema({
     uuid: { type: String, default: uuid.v4 },
-    email: { type: String, required: true },
+    email: { type: String, unique: true, trim: true, required: true },
     password: { type: String, required: true },
     person: PersonSchema,
     meta: { type: MetaSchema }
