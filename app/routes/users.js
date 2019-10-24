@@ -49,7 +49,7 @@ router.post('/signup', (req, res) => {
 
 
 router.delete('/:userUUID', (req, res) => {
-    const uuid = req.params.orderUUID;
+    const uuid = req.params.userUUID;
     User.updateOne(
         { uuid },
         {
@@ -74,6 +74,5 @@ router.delete('/:userUUID', (req, res) => {
         })
     });
 });
-
 
 module.exports = router;
