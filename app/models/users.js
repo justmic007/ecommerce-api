@@ -9,10 +9,32 @@ paginate.paginate.options = {
     limit: 100
 };
 
+const AddressSchema = new Schema({
+    addressLine1: { type: String },
+    addressLine2: { type: String, required: false },
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    country: { type: String },
+  });
+
+  const PersonSchema = new Schema({
+    firstname: { type: String },
+    lastname: { type: String },
+    middlename: { type: String },
+    companyName: { type: String },
+    gender: { type: String, enum: ['m', 'f'] },
+    dob: { type: Date },
+    telephone: { type: String },
+    customer: { type: String, enum: ['SELLER', 'BUYER'] },
+    addresses: { type: [AddressSchema] },
+  });
+
 const userSchema = new Schema({
     uuid: { type: String, default: uuid.v4 },
     email: { type: String, required: true },
     password: { type: String, required: true },
+    person: PersonSchema,
     meta: { type: MetaSchema }
 });
 
