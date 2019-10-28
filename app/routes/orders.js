@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+const checkAuth = require('../middleware-auth/check-auth');
+
 const Order = require('../models/orders');
 
-router.post('/', (req, res) => {
+router.post('/', checkAuth, (req, res) => {
     // Create an order
     const order = new Order({
         ...req.body,
@@ -32,7 +34,7 @@ router.post('/', (req, res) => {
         });
 });
 
-router.get('/', (req, res) => {
+router.get('/', checkAuth, (req, res) => {
     Order.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
     .then(payload => {
@@ -61,7 +63,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:orderUUID', (req, res) => {
+router.get('/:orderUUID', checkAuth, (req, res) => {
     const uuid = req.params.orderUUID;
     Order.findOne({ uuid, 'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
@@ -90,7 +92,7 @@ router.get('/:orderUUID', (req, res) => {
     })
 });
 
-router.put('/:orderUUID', (req, res) => {
+router.put('/:orderUUID', checkAuth, (req, res) => {
     const uuid = req.params.orderUUID;
     const updateOps = {};
     for (const ops of req.body){
@@ -115,7 +117,7 @@ router.put('/:orderUUID', (req, res) => {
     })
 });
 
-router.delete('/:orderUUID', (req, res) => {
+router.delete('/:orderUUID', checkAuth, (req, res) => {
     const uuid = req.params.orderUUID;
     Order.updateOne(
         { uuid },
