@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+const checkAuth = require('../middleware-auth/check-auth');
+
 const Cart = require('../models/carts');
 
-router.post('/', (req, res) => {
+router.post('/', checkAuth, (req, res) => {
     // Create a cart
     const cart = new Cart({
         productName: req.body.productName,
@@ -35,7 +37,7 @@ router.post('/', (req, res) => {
         });
 });
 
-router.get('/', (req, res) => {
+router.get('/', checkAuth, (req, res) => {
     Cart.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
     .then(payload => {
@@ -71,7 +73,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get(`/:productUUID`, (req, res) => {
+router.get(`/:productUUID`, checkAuth, (req, res) => {
     const uuid = req.params.productUUID;
     Cart.findOne({ uuid, 'meta.active': { $gte: true } }, {__v: 0, _id: 0})
     .exec()
@@ -95,7 +97,7 @@ router.get(`/:productUUID`, (req, res) => {
     });
 });
 
-router.put('/:productUUID', (req, res) => {
+router.put('/:productUUID', checkAuth, (req, res) => {
     const uuid = req.params.productUUID;
     const updateOps = {};
     for (const ops of req.body){
@@ -120,7 +122,7 @@ router.put('/:productUUID', (req, res) => {
     })
 });
 
-router.delete('/:productUUID', (req, res) => {
+router.delete('/:productUUID', checkAuth, (req, res) => {
     const uuid = req.params.productUUID;
     Cart.deleteOne(
         { uuid },
