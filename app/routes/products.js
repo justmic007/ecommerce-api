@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
+const checkAuth = require('../middleware-auth/check-auth');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/');
@@ -32,11 +34,11 @@ const upload = multer({
 
 const Product = require('../models/products');
 
-router.post('/', upload.array('productImage', 5), (req, res) => {
+router.post('/', checkAuth, upload.array('productImage', 5), (req, res) => {
     console.log('@@FILE', ...req.files.map(path => {
         path
     }));
-    // console.log('@@FILE', req.body);
+    console.log('@@FILE', req.body);
     // Create a product
     const product = new Product({
         productName: req.body.productName,
@@ -152,7 +154,7 @@ router.get(`/:productUUID`, (req, res) => {
     });
 });
 
-router.put('/:productUUID', (req, res) => {
+router.put('/:productUUID', checkAuth, (req, res) => {
     const uuid = req.params.productUUID;
     const updateOps = {};
     for (const ops of req.body){
@@ -177,7 +179,7 @@ router.put('/:productUUID', (req, res) => {
     })
 });
 
-router.delete('/:productUUID', (req, res) => {
+router.delete('/:productUUID', checkAuth, (req, res) => {
     const uuid = req.params.productUUID;
     Product.updateOne(
         { uuid },
