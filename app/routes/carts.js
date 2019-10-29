@@ -10,6 +10,7 @@ router.post('/', checkAuth, (req, res) => {
     const cart = new Cart({
         productName: req.body.productName,
         quantity: req.body.quantity,
+        totalAmount: req.body.totalAmount,
         meta: { ...req.body.meta, created: new Date() }
     });
     cart
@@ -21,6 +22,7 @@ router.post('/', checkAuth, (req, res) => {
                 createdCart: {
                     productName: payload.productName,
                     quantity: payload.quantity,
+                    totalAmount: req.body.totalAmount,
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
@@ -47,6 +49,7 @@ router.get('/', checkAuth, (req, res) => {
                 return {
                     productName: req.body.productName,
                     quantity: req.body.quantity,
+                    totalAmount: req.body.totalAmount,
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
