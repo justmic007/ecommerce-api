@@ -2,37 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const checkAuth = require('../middleware-auth/check-auth');
-
 const Order = require('../models/orders');
+const OrdersController = require('../controllers/orders');
 
-router.post('/', checkAuth, (req, res) => {
-    // Create an order
-    const order = new Order({
-        ...req.body,
-        meta: { ...req.body.meta, created: new Date() },
-    });
-    order
-        .save()
-        .then(payload => {
-            console.log(payload);
-            res.status(201).json({
-                message: 'Successfully ordered item(s)',
-                createdOrder: {
-                    ...payload,
-                    request: {
-                        type: 'GET',
-                        url: 'http://localhost:3000/orders/' + payload.uuid
-                    }
-                }
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        });
-});
+router.post('/', checkAuth, OrdersController.ordersPOST );
 
 router.get('/', checkAuth, (req, res) => {
     Order.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})

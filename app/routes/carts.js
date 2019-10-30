@@ -8,11 +8,12 @@ const Cart = require('../models/carts');
 router.post('/', checkAuth, (req, res) => {
     // Create a cart
     const cart = new Cart({
-        productName: req.body.productName,
-        quantity: req.body.quantity,
+        productName: req.body.map(({ productName }) => productName),
+        // quantity: req.body.quantity,
         totalAmount: req.body.totalAmount,
         meta: { ...req.body.meta, created: new Date() }
     });
+    console.log('carrrrrrrrr', req.body);
     cart
         .save()
         .then(payload => {
