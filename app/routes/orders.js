@@ -15,7 +15,7 @@ router.get('/', checkAuth, (req, res) => {
             count: payload.length,
             orders: payload.map(payload => {
                 return {
-                    ...req.body,
+                    payload,
                     request: {
                         type: 'GET',
                         url: 'http://localhost:3000/orders/' + payload.uuid
