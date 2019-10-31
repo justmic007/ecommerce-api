@@ -13,7 +13,7 @@ exports.ordersPOST = (req, res) => {
             res.status(201).json({
                 message: 'Successfully ordered item(s)',
                 createdOrder: {
-                    ...payload,
+                    payload,
                     request: {
                         type: 'GET',
                         url: 'http://localhost:3000/orders/' + payload.uuid
