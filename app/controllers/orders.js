@@ -28,3 +28,32 @@ exports.ordersPOST = (req, res) => {
             })
         });
 }
+
+exports.ordersGetAll = (req, res) => {
+    Order.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
+    .exec()
+    .then(payload => {
+        const response = {
+            count: payload.length,
+            orders: payload.map(payload => {
+                return {
+                    payload,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/orders/' + payload.uuid
+                    }
+                }
+            }),
+        };
+        console.log(payload);
+        res.status(200).json({
+            response
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        });
+    });
+}
