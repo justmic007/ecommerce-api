@@ -13,7 +13,7 @@ const cartSchema = new Schema({
     uuid: { type: String, default: uuid.v4 },
     productName: { type: [String], ref: PRODUCT, required: true },
     quantity: { type: Number, default: 1 },
-    totalAmount: { type: Number, default: 0.00 },
+    // totalAmount: { type: Number, default: 0.00 },
     meta: { type: MetaSchema }
 });
 
