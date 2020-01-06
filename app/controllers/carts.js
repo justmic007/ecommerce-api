@@ -18,7 +18,7 @@ exports.cartsPOST = (req, res) => {
                 createdCart: {
                     productName: payload.productName,
                     quantity: payload.quantity,
-                    totalAmount: req.body.totalAmount,
+                    // totalAmount: req.body.totalAmount,
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
@@ -41,73 +41,75 @@ exports.cartsPOST = (req, res) => {
 //  ])
 
 exports.cartsGetAll = (req, res) => {
-    Cart.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
-    .exec()
-    .then(payload => {
-        const response = {
-            count: payload.length,
-            products: payload.map(payload => {
-                return {
-                    productName: req.body.productName,
-                    quantity: req.body.quantity,
-                    totalAmount: req.body.totalAmount,
-                    uuid: payload.uuid,
-                    request: {
-                        type: 'GET',
-                        url: 'http://localhost:3000/carts/' + payload.uuid
+    Cart.find({ 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+        .exec()
+        .then(payload => {
+            const response = {
+                count: payload.length,
+                products: payload.map(payload => {
+                    return {
+                        productName: req.body.productName,
+                        quantity: req.body.quantity,
+                        // totalAmount: req.body.totalAmount,
+                        uuid: payload.uuid,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/carts/' + payload.uuid
+                        }
                     }
-                }}),
-        };
-        console.log(payload)
-        // if (payload) {
+                }),
+            };
+            console.log(payload)
+            // if (payload) {
             res.status(200).json({
                 response
+            })
+            // } else {
+            //     res.status(404).json({
+            //         message: 'Not found'
+            //     })
+            // }
         })
-        // } else {
-        //     res.status(404).json({
-        //         message: 'Not found'
-        //     })
-        // }
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
         });
-    });
 }
 
 exports.cartsGetOne = (req, res) => {
     const uuid = req.params.productUUID;
-    Cart.findOne({ uuid, 'meta.active': { $gte: true } }, {__v: 0, _id: 0})
-    .exec()
-    .then(payload => {
-        console.log("From database", payload);
-        if (payload) {
-            res.status(200).json({
-                product: payload,
-                request: {
-                    type: 'GET',
-                    description: 'Get a Single product(item) from Cart',
-                    url: 'http://localhost:3000/carts/' + payload.uuid
-            }});
-        } else {
-            res.status(404).json({ message: 'Not found'});
-        }
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({error: err});
-    });
+    Cart.findOne({ uuid, 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+        .exec()
+        .then(payload => {
+            console.log("From database", payload);
+            if (payload) {
+                res.status(200).json({
+                    product: payload,
+                    request: {
+                        type: 'GET',
+                        description: 'Get a Single product(item) from Cart',
+                        url: 'http://localhost:3000/carts/' + payload.uuid
+                    }
+                });
+            } else {
+                res.status(404).json({ message: 'Not found' });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        });
 }
 
 exports.cartsUpdateOne = (req, res) => {
     const uuid = req.params.productUUID;
     const updateOps = {};
-    for (const ops of req.body){
+    for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    Cart.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now()})
+    Cart.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now() })
         .exec()
         .then(payload => {
             res.status(200).json({
@@ -117,13 +119,14 @@ exports.cartsUpdateOne = (req, res) => {
                     type: 'PUT',
                     description: 'Updates a Single product in cart',
                     url: 'http://localhost:3000/carts/' + uuid
-        }})
-    })
-    .catch(err => {
-        res.status({
-            error: err
+                }
+            })
         })
-    })
+        .catch(err => {
+            res.status({
+                error: err
+            })
+        })
 }
 
 exports.cartsDeleteOne = (req, res) => {
@@ -131,11 +134,11 @@ exports.cartsDeleteOne = (req, res) => {
     Cart.deleteOne(
         { uuid },
         {
-            $set: {'meta.updated': new Date() }
+            $set: { 'meta.updated': new Date() }
         }
     )
-    .exec()
-    .then(payload => {
+        .exec()
+        .then(payload => {
             res.status(200).json({
                 product: payload,
                 message: 'Product deleted',
@@ -143,12 +146,13 @@ exports.cartsDeleteOne = (req, res) => {
                     type: 'DELETE',
                     description: 'Deletes a single product by its uuid',
                     url: 'http://localhost:3000/products/'
-        }})
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
+                }
+            })
         })
-    });
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        });
 }
