@@ -53,7 +53,7 @@ exports.productsPOST = (req, res) => {
 }
 
 exports.productsGetAll = (req, res) => {
-    Product.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
+    Product.aggregate({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
     .then(payload => {
         const response = {

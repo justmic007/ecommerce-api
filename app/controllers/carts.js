@@ -35,6 +35,11 @@ exports.cartsPOST = (req, res) => {
         });
 }
 
+// db.orders.aggregate([
+//     { $match: { status: "A" } },
+//     { $group: { _id: "$cust_id", total: { $sum: "$amount" } } }
+//  ])
+
 exports.cartsGetAll = (req, res) => {
     Cart.find({'meta.active': { $gte: true }}, {__v: 0, _id: 0})
     .exec()
