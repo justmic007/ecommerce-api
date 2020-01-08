@@ -11,10 +11,10 @@ paginate.paginate.options = {
 
 const productSchema = new Schema({
     uuid: { type: String, default: uuid.v4 },
-    StockId: { type: String, ref: STOCK, required: true },
+    stockItem: { type: String, ref: STOCK, required: true },
     productImage: { type: [String], required: true },
     unitPrice: { type: Number, required: true },
-    model: { type: [String], required: true },
+    model: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
     meta: { type: MetaSchema }
