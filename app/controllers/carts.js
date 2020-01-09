@@ -1,14 +1,16 @@
 const Cart = require('../models/carts');
 
 exports.cartsPOST = (req, res) => {
+    // console.log('carrrrrrrrr', req.body);
     // Create a cart
     const cart = new Cart({
-        productName: req.body.map(({ productName }) => productName),
-        // quantity: req.body.quantity,
-        totalAmount: req.body.totalAmount,
+        productId: req.body.productId,
+        // productId: req.body.map(({ productId }) => productId),
+        quantity: req.body.quantity,
+        // totalAmount: req.body.totalAmount,
         meta: { ...req.body.meta, created: new Date() }
     });
-    console.log('carrrrrrrrr', req.body);
+    // console.log('carrrrrrrrr', req.body);
     cart
         .save()
         .then(payload => {
@@ -16,7 +18,7 @@ exports.cartsPOST = (req, res) => {
             res.status(201).json({
                 message: 'Added product cart successfully',
                 createdCart: {
-                    productName: payload.productName,
+                    productId: payload.productId,
                     quantity: payload.quantity,
                     // totalAmount: req.body.totalAmount,
                     uuid: payload.uuid,
@@ -42,15 +44,15 @@ exports.cartsPOST = (req, res) => {
 
 exports.cartsGetAll = (req, res) => {
     Cart.find({ 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+        .populate('productId')
         .exec()
         .then(payload => {
             const response = {
                 count: payload.length,
                 products: payload.map(payload => {
                     return {
-                        productName: req.body.productName,
-                        quantity: req.body.quantity,
-                        // totalAmount: req.body.totalAmount,
+                        productId: payload.productId,
+                        quantity: payload.quantity,
                         uuid: payload.uuid,
                         request: {
                             type: 'GET',
