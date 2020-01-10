@@ -82,27 +82,27 @@ exports.cartsGetAll = (req, res) => {
 
 exports.cartsGetOne = (req, res) => {
     const uuid = req.params.productUUID;
-    Cart.findOne({ uuid, 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
-        .exec()
-        .then(payload => {
-            console.log("From database", payload);
-            if (payload) {
-                res.status(200).json({
-                    product: payload,
-                    request: {
-                        type: 'GET',
-                        description: 'Get a Single product(item) from Cart',
-                        url: 'http://localhost:3000/carts/' + payload.uuid
-                    }
-                });
-            } else {
-                res.status(404).json({ message: 'Not found' });
-            }
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
-        });
+    // Cart.findOne({ uuid, 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+    //     .exec()
+    //     .then(payload => {
+    //         console.log("From database", payload);
+    //         if (payload) {
+    //             res.status(200).json({
+    //                 product: payload,
+    //                 request: {
+    //                     type: 'GET',
+    //                     description: 'Get a Single product(item) from Cart',
+    //                     url: 'http://localhost:3000/carts/' + payload.uuid
+    //                 }
+    //             });
+    //         } else {
+    //             res.status(404).json({ message: 'Not found' });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //         res.status(500).json({ error: err });
+    //     });
 }
 
 exports.cartsUpdateOne = (req, res) => {
