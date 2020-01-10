@@ -21,13 +21,18 @@ exports.ordersPOST = (req, res) => {
                 }
             });
         })
-    Cart.updateMany({ uuid: { $exists: true } }, { $set: { 'meta.active': false } })
 
         .catch(err => {
             console.log(err);
             res.status(500).json({
                 error: err
             })
+        });
+    const { body: { cartIds } } = req;
+    Cart.updateMany({ uuid: { $in: cartIds } }, { $set: { 'meta.active': false } })
+    Cart.find({ uuid: { $in: cartIds } })
+        .then(carts => {
+            carts.forEach(cart => console.log(cart));
         });
 }
 
