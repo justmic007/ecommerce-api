@@ -10,6 +10,7 @@ const MetaSchema = new Schema({
 module.exports = {
   MetaSchema,
   PRODUCT: 'Product',
+  STOCK: 'Stock',
   CART: 'Cart',
   USER: 'User'
 }

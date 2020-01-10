@@ -1,38 +1,33 @@
-const Product = require('../models/products');
+const Stock = require('../models/stock');
 
-exports.productsPOST = (req, res) => {
-    console.log('@@FILE', ...req.files.map(path => {
-        path
-    }));
-    console.log('@@FILE', req.body);
-    // Create a product
-    const product = new Product({
-        stockItem: req.body.stockItem,
-        productImage: req.files.map(({ path }) => path),
-        unitPrice: req.body.unitPrice,
-        model: req.body.model,
-        category: req.body.category,
-        description: req.body.description,
+exports.stockPOST = (req, res) => {
+    // console.log('@@FILE', req.body);
+    // Create a stock
+    const stock = new Stock({
+        productName: req.body.productName,
+        batchNo: req.body.batchNo,
+        noInStock: req.body.noInStock,
+        productSKU: req.body.productSKU,
+        brand: req.body.brand,
+        manufacturer: req.body.manufacturer,
         meta: { ...req.body.meta, created: new Date() }
     });
-    product
+    stock
         .save()
         .then(payload => {
-            console.log({ payload });
+            // console.log({ payload });
             res.status(201).json({
-                message: 'Created product successfully',
-                createdProduct: {
-                    stockItem: payload.stockItem,
-                    productImage: payload.productImage,
-                    unitPrice: payload.unitPrice,
+                message: 'Created stock successfully',
+                createdStock: {
+                    productName: payload.productName,
                     productSKU: payload.productSKU,
-                    model: payload.model,
+                    brand: payload.brand,
                     category: payload.category,
-                    description: payload.description,
+                    manufacturer: payload.manufacturer,
                     uuid: payload.uuid,
                     request: {
                         type: 'GET',
-                        url: 'http://localhost:3000/products/' + payload.uuid
+                        url: 'http://localhost:3000/stock/' + payload.uuid
                     }
                 }
             });
@@ -45,25 +40,23 @@ exports.productsPOST = (req, res) => {
         });
 }
 
-exports.productsGetAll = (req, res) => {
-    Product.find({ 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+exports.stockGetAll = (req, res) => {
+    Stock.find({ 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
         .exec()
         .then(payload => {
             const response = {
                 count: payload.length,
-                products: payload.map(payload => {
+                stocks: payload.map(payload => {
                     return {
-                        stockItem: payload.stockItem,
-                        productImage: payload.productImage,
-                        unitPrice: payload.unitPrice,
+                        productName: payload.productName,
                         productSKU: payload.productSKU,
-                        model: payload.model,
-                        category: payload.category,
+                        brand: payload.brand,
+                        manufacturer: payload.manufacturer,
                         description: payload.description,
                         uuid: payload.uuid,
                         request: {
                             type: 'GET',
-                            url: 'http://localhost:3000/products/' + payload.uuid
+                            url: 'http://localhost:3000/stock/' + payload.uuid
                         }
                     }
                 }),
@@ -87,19 +80,19 @@ exports.productsGetAll = (req, res) => {
         });
 }
 
-exports.productsGetOne = (req, res) => {
-    const uuid = req.params.productUUID;
-    Product.findOne({ uuid, 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
+exports.stockGetOne = (req, res) => {
+    const uuid = req.params.stockUUID;
+    Stock.findOne({ uuid, 'meta.active': { $gte: true } }, { __v: 0, _id: 0 })
         .exec()
         .then(payload => {
             console.log("From database", payload);
             if (payload) {
                 res.status(200).json({
-                    product: payload,
+                    stock: payload,
                     request: {
                         type: 'GET',
-                        description: 'Get a Single product',
-                        url: 'http://localhost:3000/products/' + payload.uuid
+                        description: 'Get a Single stock',
+                        url: 'http://localhost:3000/stock/' + payload.uuid
                     }
                 });
             } else {
@@ -112,22 +105,22 @@ exports.productsGetOne = (req, res) => {
         });
 }
 
-exports.productsUpdateOne = (req, res) => {
-    const uuid = req.params.productUUID;
+exports.stockUpdateOne = (req, res) => {
+    const uuid = req.params.stockUUID;
     const updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    Product.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now() })
+    Stock.updateOne({ uuid: uuid }, { $set: updateOps, 'meta.updated': Date.now() })
         .exec()
         .then(payload => {
             res.status(200).json({
-                product: payload,
-                message: 'Product updated',
+                stock: payload,
+                message: 'Stock updated',
                 request: {
                     type: 'PUT',
-                    description: 'Updates a Single product',
-                    url: 'http://localhost:3000/products/' + uuid
+                    description: 'Updates a Single stock',
+                    url: 'http://localhost:3000/stock/' + uuid
                 }
             })
         })
@@ -138,9 +131,9 @@ exports.productsUpdateOne = (req, res) => {
         })
 }
 
-exports.productsDeleteOne = (req, res) => {
-    const uuid = req.params.productUUID;
-    Product.updateOne(
+exports.stockDeleteOne = (req, res) => {
+    const uuid = req.params.stockUUID;
+    Stock.updateOne(
         { uuid },
         {
             $set: { 'meta.active': false, 'meta.updated': new Date() }
@@ -149,12 +142,12 @@ exports.productsDeleteOne = (req, res) => {
         .exec()
         .then(payload => {
             res.status(200).json({
-                product: payload,
-                message: 'Product deleted',
+                stock: payload,
+                message: 'Stock deleted',
                 request: {
                     type: 'DELETE',
-                    description: 'Soft-deletes a single product by its uuid',
-                    url: 'http://localhost:3000/products/'
+                    description: 'Soft-deletes a single stock by its uuid',
+                    url: 'http://localhost:3000/stock/'
                 }
             })
         })

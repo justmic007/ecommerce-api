@@ -6,12 +6,13 @@ const logger = require('morgan');
 const app = express();
 
 const productRoutes = require('./routes/products');
+const stockRoutes = require('./routes/stock');
 const orderRoutes = require('./routes/orders');
 const cartRoutes = require('./routes/carts');
 const userRoutes = require('./routes/users');
 
 
-mongoose.set( 'useCreateIndex', true );
+mongoose.set('useCreateIndex', true);
 
 mongoose.connect(
     'mongodb://localhost:27017/ecommerceapp-products',
@@ -46,6 +47,7 @@ app.use((req, res, next) => {
 })
 
 // Routes that handles requests
+app.use('/stock', stockRoutes);
 app.use('/products', productRoutes);
 // app.use('/products/:{uuid}', productRoutes);
 app.use('/orders', orderRoutes);
