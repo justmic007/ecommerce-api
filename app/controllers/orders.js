@@ -1,10 +1,8 @@
 const Order = require('../models/orders');
-// const Cart = require('../models/carts');
+const Cart = require('../models/carts');
 
 exports.ordersPOST = (req, res) => {
     // Create an order
-    // console.log('<==========', ...req.body);
-    // console.log('========>', dbCart);
     const order = new Order({
         ...req.body,
         meta: { ...req.body.meta, created: new Date() },
@@ -12,7 +10,6 @@ exports.ordersPOST = (req, res) => {
     order
         .save()
         .then(payload => {
-            // console.log(payload);
             res.status(201).json({
                 message: 'Successfully ordered item(s)',
                 createdOrder: {
@@ -24,6 +21,8 @@ exports.ordersPOST = (req, res) => {
                 }
             });
         })
+    Cart.updateMany({ uuid: { $exists: true } }, { $set: { 'meta.active': false } })
+
         .catch(err => {
             console.log(err);
             res.status(500).json({
