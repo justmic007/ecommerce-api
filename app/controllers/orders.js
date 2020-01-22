@@ -18,15 +18,17 @@ exports.ordersPOST = (req, res) => {
       for (const id in cartIds) {
         Cart.findOne({ uuid: cartIds[id] })
           .then(x => {
-            // x[]
             let stockUUID = x.product.stockId;
             let cartQTY = x.quantity
-            console.log('Whao!!!', stockUUID, cartQTY);
-
+            let uuid = x.uuid
             Stock.updateOne({ uuid: stockUUID }, { $inc: { noInStock: -cartQTY } }).then(
-              u => console.log(u)
+              Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
+                u => console.log(u)
+              )
             )
-            console.log('cart item is', Stock.findOne({ 'uuid': stockUUID }, { $inc: { noInStock: (-cartQTY) } }))
+            // Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
+            //   u => console.log(u)
+            // )
           })
           .catch(err => console.log(err));
       }
