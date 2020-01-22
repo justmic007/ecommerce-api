@@ -1,6 +1,7 @@
 const Order = require('../models/orders');
 const Cart = require('../models/carts');
 // const Product = require('../models/products');
+const Stock = require('../models/stock');
 
 exports.ordersPOST = (req, res) => {
   // Create an order
@@ -18,7 +19,14 @@ exports.ordersPOST = (req, res) => {
         Cart.findOne({ uuid: cartIds[id] })
           .then(x => {
             // x[]
-            console.log('cart item is', x)
+            let stockUUID = x.product.stockId;
+            let cartQTY = x.quantity
+            console.log('Whao!!!', stockUUID, cartQTY);
+
+            Stock.updateOne({ uuid: stockUUID }, { $inc: { noInStock: -cartQTY } }).then(
+              u => console.log(u)
+            )
+            console.log('cart item is', Stock.findOne({ 'uuid': stockUUID }, { $inc: { noInStock: (-cartQTY) } }))
           })
           .catch(err => console.log(err));
       }
