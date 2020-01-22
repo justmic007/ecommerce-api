@@ -6,18 +6,18 @@ const { Schema } = mongoose;
 const { MetaSchema } = require('../schema');
 
 paginate.paginate.options = {
-    limit: 100
+  limit: 100
 };
 
 const stockSchema = new Schema({
-    uuid: { type: String, default: uuid.v4 },
-    productName: { type: String, required: true },
-    batchNo: { type: String, required: true },
-    noInStock: { type: String, required: true },
-    productSKU: { type: String, required: true },
-    brand: { type: String, required: true },
-    manufacturer: { type: String, required: true },
-    meta: { type: MetaSchema }
+  uuid: { type: String, default: uuid.v4 },
+  productName: { type: String, required: true },
+  batchNo: { type: String, required: true },
+  noInStock: { type: String, required: true },
+  productSKU: { type: String, required: true },
+  brand: { type: String, required: true },
+  manufacturer: { type: String, required: true },
+  meta: { type: MetaSchema }
 });
 
 stockSchema.index({ 'meta.created': -1, 'meta.updated': -1 });
