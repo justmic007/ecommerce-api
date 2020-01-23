@@ -1,35 +1,80 @@
 const Cart = require('../models/carts');
+const Product = require('../models/products');
 
 exports.cartsPOST = (req, res) => {
   // Create a cart
-  const cart = new Cart({
-    product: req.body.product,
-    quantity: req.body.quantity,
-    // totalAmount: req.body.totalAmount,
-    meta: { ...req.body.meta, created: new Date() }
-  });
-
-  cart.save()
-    .then(payload => {
-      res.status(201).json({
-        message: 'Added product cart successfully',
-        createdCart: {
-          product: payload.product,
-          quantity: payload.quantity,
-          // totalAmount: req.body.totalAmount,
-          uuid: payload.uuid,
-          request: {
-            type: 'GET',
-            url: 'http://localhost:3000/carts/' + payload.uuid
-          }
-        }
-      });
-    })
-    .catch(err => {
-      res.status(500).json({
-        error: err
-      })
+  let itemProductId = req.body.product.productId;
+  Product.findOne({ uuid: itemProductId }).then(u => {
+    let unitPrice = u.unitPrice
+    // let unitPrice = x
+    const cart = new Cart({
+      product: req.body.product,
+      quantity: req.body.quantity,
+      unitPrice: unitPrice,
+      itemAmount: unitPrice * req.body.quantity,
+      // totalAmount: req.body.totalAmount,
+      meta: { ...req.body.meta, created: new Date() }
     });
+
+    cart.save()
+      .then(payload => {
+        console.log(payload);
+
+        res.status(201).json({
+          message: 'Added product cart successfully',
+          createdCart: {
+            product: payload.product,
+            quantity: payload.quantity,
+            // totalAmount: req.body.totalAmount,
+            uuid: payload.uuid,
+            request: {
+              type: 'GET',
+              url: 'http://localhost:3000/carts/' + payload.uuid
+            }
+          }
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          error: err
+        })
+      });
+  }
+  )
+
+  // console.log(unitPrice);
+
+
+  // const cart = new Cart({
+  //   product: req.body.product,
+  //   quantity: req.body.quantity,
+  //   itemAmount: unitPrice,
+  //   // totalAmount: req.body.totalAmount,
+  //   meta: { ...req.body.meta, created: new Date() }
+  // });
+  // console.log('Cart before save', cart);
+
+  // cart.save()
+  //   .then(payload => {
+  //     res.status(201).json({
+  //       message: 'Added product cart successfully',
+  //       createdCart: {
+  //         product: payload.product,
+  //         quantity: payload.quantity,
+  //         // totalAmount: req.body.totalAmount,
+  //         uuid: payload.uuid,
+  //         request: {
+  //           type: 'GET',
+  //           url: 'http://localhost:3000/carts/' + payload.uuid
+  //         }
+  //       }
+  //     });
+  //   })
+  //   .catch(err => {
+  //     res.status(500).json({
+  //       error: err
+  //     })
+  //   });
 }
 
 // db.orders.aggregate([

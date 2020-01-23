@@ -26,9 +26,6 @@ exports.ordersPOST = (req, res) => {
                 u => console.log(u)
               )
             )
-            // Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
-            //   u => console.log(u)
-            // )
           })
           .catch(err => console.log(err));
       }
