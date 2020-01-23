@@ -5,45 +5,38 @@ const Stock = require('../models/stock');
 
 exports.ordersPOST = (req, res) => {
   // Create an order
-  let totalAmount = 0
+  let totalAmount = 0;
+  let numberOfItems = 0;
   Cart.find({ 'meta.active': true }).then(
     cartItems => {
-      cartItems.forEach(cart => totalAmount += cart.itemAmount)
-      console.log('@@@@@@@@', totalAmount)
+      cartItems.forEach((cart) => (totalAmount += cart.itemAmount,
+        numberOfItems += cart.quantity)
+      )
 
       const order = new Order({
         ...req.body,
         totalAmount: totalAmount,
+        totalNumberOfItems: numberOfItems,
         meta: { ...req.body.meta, created: new Date() },
       });
       order
         .save()
         .then(payload => {
           const { cartIds } = payload;
-          // console.log('Testing', payload);
-
-          // let data = {};
-          // let totalAmount = 0;
 
           for (const id in cartIds) {
 
             Cart.findOne({ uuid: cartIds[id] })
               .then(x => {
-                // console.log(x);
-                // let totalAmount = 0;
                 let stockUUID = x.product.stockId;
                 let cartQTY = x.quantity
                 let uuid = x.uuid
-                // let itemAmount = x.itemAmount;
-                // console.log(x);
-                // totalAmount = totalAmount + itemAmount
                 Stock.updateOne({ uuid: stockUUID }, { $inc: { noInStock: -cartQTY } }).then(
                   Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
                     u => console.log(u)
                   )
                 )
               },
-                // console.log(totalAmount)
               )
               .catch(err => console.log(err));
           }
