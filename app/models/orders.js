@@ -12,7 +12,6 @@ paginate.paginate.options = {
 const orderSchema = new Schema({
   uuid: { type: String, default: uuid.v4 },
   cartIds: { type: [String], ref: CART, required: true },
-  // quantity: { type: Number, default: 1 },
   totalAmount: { type: Number, required: true },
   paymentMethod: { type: String, enum: ['PAY ON DELIVERY', 'CREDIT CARD'], required: true },
   deliveryMethod: { type: String, enum: ['HOME DELIVERY', 'PICK UP'], required: true },

@@ -61,60 +61,6 @@ exports.ordersPOST = (req, res) => {
     }
   )
 
-  // const order = new Order({
-  //   ...req.body,
-  //   meta: { ...req.body.meta, created: new Date() },
-  // });
-  // order
-  //   .save()
-  //   .then(payload => {
-  //     const { cartIds } = payload;
-  //     // console.log('Testing', payload);
-
-  //     // let data = {};
-  //     // let totalAmount = 0;
-
-  //     for (const id in cartIds) {
-
-  //       Cart.findOne({ uuid: cartIds[id] })
-  //         .then(x => {
-  //           // console.log(x);
-  //           // let totalAmount = 0;
-  //           let stockUUID = x.product.stockId;
-  //           let cartQTY = x.quantity
-  //           let uuid = x.uuid
-  //           // let itemAmount = x.itemAmount;
-  //           // console.log(x);
-  //           // totalAmount = totalAmount + itemAmount
-  //           Stock.updateOne({ uuid: stockUUID }, { $inc: { noInStock: -cartQTY } }).then(
-  //             Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
-  //               u => console.log(u)
-  //             )
-  //           )
-  //         },
-  //           // console.log(totalAmount)
-  //         )
-  //         .catch(err => console.log(err));
-  //     }
-
-  //     res.status(201).json({
-  //       message: 'Successfully ordered item(s)',
-  //       createdOrder: {
-  //         payload,
-  //         request: {
-  //           type: 'GET',
-  //           url: 'http://localhost:3000/orders/' + payload.uuid
-  //         }
-  //       }
-  //     });
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //     res.status(500).json({
-  //       error: err
-  //     })
-  //   });
-
   // const { body: { cartIds } } = req;
   // console.log(cartIds);
   // Cart.find({ 'meta.active': false })
