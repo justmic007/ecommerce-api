@@ -18,8 +18,8 @@ const cartSchema = new Schema({
   uuid: { type: String, default: uuid.v4 },
   product: productSchema,
   quantity: { type: Number, default: 1 },
-  unitPrice: { type: Number },
-  itemAmount: { type: Number },
+  unitPrice: { type: Number, required: true },
+  itemAmount: { type: Number, required: true },
   // totalAmount: { type: Number, default: 0.00 },
   meta: { type: MetaSchema }
 });
