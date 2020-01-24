@@ -14,8 +14,3 @@ module.exports = {
   CART: 'Cart',
   USER: 'User'
 }
-
-// exports["defaults"] = {
-//   MetaSchema,
-//   PRODUCT: 'Product'
-// }
