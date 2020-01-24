@@ -3,18 +3,25 @@ const uuid = require('uuid');
 const paginate = require('mongoose-paginate');
 
 const { Schema } = mongoose;
-const { MetaSchema, PRODUCT } = require('../schema');
+const { MetaSchema, PRODUCT, STOCK } = require('../schema');
 
 paginate.paginate.options = {
-    limit: 100
+  limit: 100
+};
+
+const productSchema = {
+  productId: { type: String, ref: PRODUCT, required: true },
+  stockId: { type: String, ref: STOCK, required: true }
 };
 
 const cartSchema = new Schema({
-    uuid: { type: String, default: uuid.v4 },
-    productId: { type: String, ref: PRODUCT, required: true },
-    quantity: { type: Number, default: 1 },
-    // totalAmount: { type: Number, default: 0.00 },
-    meta: { type: MetaSchema }
+  uuid: { type: String, default: uuid.v4 },
+  product: productSchema,
+  quantity: { type: Number, default: 1 },
+  unitPrice: { type: Number, required: true },
+  itemAmount: { type: Number, required: true },
+  // totalAmount: { type: Number, default: 0.00 },
+  meta: { type: MetaSchema }
 });
 
 cartSchema.index({ 'meta.created': -1, 'meta.updated': -1 });
