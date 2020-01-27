@@ -10,10 +10,12 @@ exports.ordersPOST = (req, res) => {
   let numberOfItems = 0;
   const { cartIds } = req.body;
 
-  Cart.find({ uuid: { $in: cartIds } }).then(
+  Cart.find({ $and: [{ uuid: { $in: cartIds } }, { 'meta.active': true }] }).then(
     cartItems => {
-      cartItems.forEach((cart) => (totalAmount += cart.itemAmount,
-        numberOfItems += cart.quantity)
+      cartItems.forEach((cart) => (
+        totalAmount += cart.itemAmount,
+        numberOfItems += cart.quantity
+      )
       )
 
       const order = new Order({
