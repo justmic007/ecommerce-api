@@ -10,43 +10,49 @@ exports.ordersPOST = (req, res) => {
   let numberOfItems = 0;
   const { cartIds } = req.body;
 
-  Cart.find({ $and: [{ uuid: { $in: cartIds } }, { 'meta.active': true }] }).then(
-    cartItems => {
-      cartItems.forEach((cart) => (
-        totalAmount += cart.itemAmount,
-        numberOfItems += cart.quantity
-      )
-      )
+  Cart.find({ $and: [{ uuid: { $in: cartIds } }, { 'meta.active': true }] }).then(cartItems => {
+    cartItems.forEach((cart) => {
+      totalAmount += cart.itemAmount;
+      numberOfItems += cart.quantity;
+    });
 
-      const order = new Order({
-        ...req.body,
-        totalAmount: totalAmount,
-        totalNumberOfItems: numberOfItems,
-        meta: { ...req.body.meta, created: new Date() },
-      });
+    const order = new Order({
+      ...req.body,
+      totalAmount: totalAmount,
+      totalNumberOfItems: numberOfItems,
+      meta: { ...req.body.meta, created: new Date() },
+    });
 
-      order
-        .save()
-        .then(payload => {
-          const { cartIds } = payload;
+    order.save().then(payload => {
+      const { cartIds } = payload;
 
-          for (const id in cartIds) {
+      let process = async () => {
+        let count = 0;
+        const carts = (await Cart.find({ uuid: { $in: cartIds } }).lean()).map(({ product: { stockId }, quantity, uuid }) => ({ stockId, quantity, uuid }));
 
-            Cart.findOne({ uuid: cartIds[id] })
-              .then(x => {
-                let stockUUID = x.product.stockId;
-                let cartQTY = x.quantity
-                let uuid = x.uuid
-                Stock.updateOne({ uuid: stockUUID }, { $inc: { noInStock: -cartQTY } }).then(
-                  Cart.updateOne({ uuid: uuid }, { $set: { 'meta.active': false } }).then(
-                    u => console.log(u)
-                  )
-                )
-              },
-              )
-              .catch(err => console.log(err));
+        for (const cart of carts) {
+          console.log('Cart', cart);
+          const findOneStock = (await Stock.findOne({ uuid: cart.stockId }));
+          console.log('Find One');
+          if (findOneStock) {
+            // compare stock in db with cart.quantity
+            const stockAsync = (await Stock.updateOne({ uuid: cart.stockId }, { $inc: { noInStock: -cart.quantity } }));
+            if (stockAsync) {
+              const updateOneAsync = (await Cart.updateOne({ uuid: cart.uuid }, { $set: { 'meta.active': false } }));
+              if (updateOneAsync) {
+                console.log('Update two');
+                count++;
+                console.log('Count', count);
+              }
+            }
           }
+        }
+        return count;
+      };
 
+      process().then(count => {
+        console.log('Final Count', count, cartIds.length);
+        if (count === cartIds.length) {
           res.status(201).json({
             message: 'Successfully ordered item(s)',
             createdOrder: {
@@ -57,15 +63,18 @@ exports.ordersPOST = (req, res) => {
               }
             }
           });
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(500).json({
-            error: err
-          })
-        });
-    }
-  )
+        } else {
+          res.status(404).json({});
+        }
+      });
+
+    }).catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
+  });
 
   // const order = new Order({
   //   ...req.body,
