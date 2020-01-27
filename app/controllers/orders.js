@@ -5,9 +5,12 @@ const Stock = require('../models/stock');
 
 exports.ordersPOST = (req, res) => {
   // Create an order
+
   let totalAmount = 0;
   let numberOfItems = 0;
-  Cart.find({ 'meta.active': true }).then(
+  const { cartIds } = req.body;
+
+  Cart.find({ uuid: { $in: cartIds } }).then(
     cartItems => {
       cartItems.forEach((cart) => (totalAmount += cart.itemAmount,
         numberOfItems += cart.quantity)
@@ -19,6 +22,7 @@ exports.ordersPOST = (req, res) => {
         totalNumberOfItems: numberOfItems,
         meta: { ...req.body.meta, created: new Date() },
       });
+
       order
         .save()
         .then(payload => {
