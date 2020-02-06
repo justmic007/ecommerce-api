@@ -10,6 +10,7 @@ exports.ordersPOST = (req, res) => {
   let numberOfItems = 0;
   const { cartIds } = req.body;
 
+  // rework this to calculate totalAmount and numberOfItems at the  point of updating Stock collection
   Cart.find({ $and: [{ uuid: { $in: cartIds } }, { 'meta.active': true }] }).then(cartItems => {
     cartItems.forEach((cart) => {
       totalAmount += cart.itemAmount;
@@ -24,20 +25,23 @@ exports.ordersPOST = (req, res) => {
     });
 
     order.save().then(payload => {
+      // Implement Transaction for the multi-documents
       const { cartIds } = payload;
 
       let process = async () => {
         let count = 0;
         const carts = (await Cart.find({ uuid: { $in: cartIds } }).lean()).map(({ product: { stockId }, quantity, uuid }) => ({ stockId, quantity, uuid }));
 
+        console.log(carts)
         for (const cart of carts) {
-          console.log('Cart', cart);
+          // console.log('Cart', cart);
           const findOneStock = (await Stock.findOne({ uuid: cart.stockId }));
-          console.log('Find One');
+          // console.log('Find One', findOneStock);
           if (findOneStock) {
             // compare stock in db with cart.quantity
             const stockAsync = (await Stock.updateOne({ uuid: cart.stockId }, { $inc: { noInStock: -cart.quantity } }));
             if (stockAsync) {
+              await Cart.updateOne({ uuid: cart.uuid }, { $set: { 'meta.active': false } })
               const updateOneAsync = (await Cart.updateOne({ uuid: cart.uuid }, { $set: { 'meta.active': false } }));
               if (updateOneAsync) {
                 console.log('Update two');
